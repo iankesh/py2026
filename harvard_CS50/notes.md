@@ -30,9 +30,13 @@ Click any lecture below to view or edit its detailed notes:
 - **[Lecture 0: Functions, Variables](lecture_0_functions_variables.md)**
   - Functions, Built-ins vs. `def`, Calling / Invoking
   - Variables & Assignment (`variable = input()`), Right-to-left evaluation, PEP 8 naming
-  - Arguments vs. Parameters (Positional & Keyword: `sep`, `end`)
+  - **Data Types (`str`, `int`, `float`)**: string immutability, `.strip()` deep dive, arithmetic operators (`+`, `-`, `*`, `/`, `%`), float precision & `round()`, type casting
+  - Arguments vs. Parameters (Positional vs. Keyword)
+  - `print(*objects, sep=' ', end='\n', file=None, flush=False)` from official Python docs
+  - Multiple inverted commas on a single line & Backslash `\` (escapes, `\n`, `\t`, `\\`, raw strings `r""`)
+  - Format Strings (f-strings), `{}` placeholders & modifiers (`{:,}`, `{:.2f}`, literal `{{}}`)
   - Side Effects vs. Return Values (`print()` returns `None`)
-  - Getting User Input (`input()`), String cleaning (`strip`, `capitalize`, `title`, `split`), Type conversion (`int()`, `float()`)
+  - Getting User Input (`input()`), The `str` data type & methods, Method Chaining (`.strip().capitalize()`, `.strip().title()`), Splitting & Unpacking (`first, last = name.split(" ")`), Type conversion (`int()`, `float()`)
   - The `return` keyword (Immediate exit, composability, tuples)
 - **[Lecture 1: Conditionals](lecture_1_conditionals.md)**
   - `if`, `elif`, `else`, Boolean expressions, `or`, `and`, `match/case`
