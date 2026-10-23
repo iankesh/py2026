@@ -36,7 +36,7 @@ Click any lecture below to view or edit its detailed notes:
   - Multiple inverted commas on a single line & Backslash `\` (escapes, `\n`, `\t`, `\\`, raw strings `r""`)
   - Format Strings (f-strings), `{}` placeholders & modifiers (`{:,}`, `{:.2f}`, literal `{{}}`)
   - Side Effects vs. Return Values (`print()` returns `None`)
-  - Getting User Input (`input()`), The `str` data type & methods, Method Chaining (`.strip().capitalize()`, `.strip().title()`), Splitting & Unpacking (`first, last = name.split(" ")`), Type conversion (`int()`, `float()`)
+  - Getting User Input (`input()`), Nested Functions (`int(input())` inside-out evaluation), Method Chaining (`.strip().title()`), Splitting & Unpacking (`first, last = name.split(" ")`), Type conversion (`int()`, `float()`)
   - The `return` keyword (Immediate exit, composability, tuples)
 - **[Lecture 1: Conditionals](lecture_1_conditionals.md)**
   - `if`, `elif`, `else`, Boolean expressions, `or`, `and`, `match/case`

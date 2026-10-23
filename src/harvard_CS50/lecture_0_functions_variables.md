@@ -61,6 +61,7 @@ In Python, every value has a **data type** that dictates what kind of data it re
   | **`str.rstrip()`** | **Right only** | Trims characters from the **end (right side)** only | `"   hello   ".rstrip()` | `'   hello'` |
 
   - **1. `.strip([chars])`:**
+    - *(Note: `[chars]` is in square brackets in documentation, indicating it is **optional** — omit it to strip whitespace by default).*
     - Removes whitespace or specified characters from **both ends**.
     - ⚠️ **Important:** It **never removes whitespace inside or between words**:
       ```python
@@ -189,37 +190,171 @@ In Python, every value has a **data type** that dictates what kind of data it re
     - Any number `% 2 == 0` is **Even**.
     - Any number `% 2 != 0` is **Odd**.
 
-- **Type Casting User Input to `int` (`int()`):**
-  - Because `input()` always returns a string, adding two `input()` results directly causes string concatenation:
+- **The `calculator.py` Case Study: Fixing String Concatenation (`x + y`):**
+
+  1. **The Bug — String Concatenation:**
+     When writing a basic calculator, beginners naturally try:
+     ```python
+     x = input("What's x? ")  # User enters: 1
+     y = input("What's y? ")  # User enters: 2
+     z = x + y
+     print(z)                 # Output: "12" (BUG!)
+     ```
+     - **Why this happens:** Because `input()` *always* returns a `str` (string). When Python sees the `+` operator between two strings, it performs **string concatenation** (gluing text together: `"1"` + `"2"` = `"12"`), not mathematical addition!
+
+  2. **Approach 1: Convert when calculating (`int(x) + int(y)`):**
+     Keep `x` and `y` as strings initially, then cast them when computing:
+     ```python
+     x = input("What's x? ")
+     y = input("What's y? ")
+     z = int(x) + int(y)      # 1 + 2 = 3
+     print(z)                 # Output: 3
+     ```
+
+  3. **Approach 2: Nesting Functions — `int(input(...))` (Best Practice):**
+     Instead of creating temporary string variables, you pass the `input()` function call directly inside `int()`:
+     ```python
+     x = int(input("What's x? "))
+     y = int(input("What's y? "))
+     print(x + y)             # Output: 3
+     ```
+
+- **Deep Dive: Nested Functions (Function Composition):**
+  - **Definition:** A nested function occurs when the call to one function serves as the argument to another:
     ```python
-    x = input("x: ")  # User types 1
-    y = input("y: ")  # User types 2
-    print(x + y)      # Output: "12" (String Concatenation!)
+    outer_function(inner_function())
     ```
-  - **The Fix:** Explicitly cast with `int()`:
-    ```python
-    x = int(input("x: "))  # 1
-    y = int(input("y: "))  # 2
-    print(x + y)           # Output: 3 (Mathematical Addition!)
-    ```
-  - ⚠️ **`ValueError` Gotcha:** Passing text with letters or decimals to `int()` raises an error:
-    - `int("cat")` &rarr; `ValueError: invalid literal for int() with base 10: 'cat'`
-    - `int("3.14")` &rarr; `ValueError: invalid literal for int() with base 10: '3.14'` (use `float("3.14")` instead).
+  - **The Inside-Out (Onion Layer) Rule:**
+    - Python evaluates nested functions **strictly from the innermost parentheses outward**:
+      ```text
+      x = int( input("What's x? ") )
+               \_________________/   1. INNER function runs first -> prompts user & returns "5" (str)
+             \___________________/   2. OUTER function runs next  -> int("5") converts it to 5 (int)
+      x = 5                          3. Assignment '=' stores final integer 5 into variable x
+      ```
+
+  - **Multi-Level Nesting Examples:**
+    - **2 Levels:** `print(square(4))` &rarr; `square(4)` returns `16`, then `print(16)` executes.
+    - **3 Levels:** `score = round(float(input("Score: ")), 2)`
+      1. `input(...)` returns `"98.6666"`
+      2. `float(...)` converts to `98.6666`
+      3. `round(..., 2)` rounds to `98.67`
+
+  - **Nested Functions vs. Method Chaining:**
+    - **Nested Functions (Inside-Out):** `int(input("x: "))` &rarr; Wrap functions inside functions like an onion.
+    - **Method Chaining (Left-to-Right):** `name.strip().title()` &rarr; Calls object methods in sequence using dot notation.
+
+  - **Readability & The "Too Much Nesting" Rule:**
+    - Nesting 1 to 2 levels (e.g., `int(input(...))` or `print(f"...")`) is clean and eliminates unnecessary dummy variables.
+    - **Over-nesting** hurts readability and debugging:
+      ```python
+      # Avoid over-nesting on one line (hard to read and debug):
+      print(round(float(input("x: ")) + float(input("y: ")), 2))
+      ```
+
+  - ⚠️ **`ValueError` with Nested `int(input())`:**
+    - If user types letters (e.g. `"cat"`), the inner `input()` succeeds, but the outer `int("cat")` immediately crashes:
+      `ValueError: invalid literal for int() with base 10: 'cat'`
 
 #### C. The `float` (Floating-Point) Data Type
-- **Definition:** Real numbers that include a decimal point (e.g., `3.14`, `-0.01`, `2.0`).
-- **Floating-Point Imprecision:** Computers store decimals in binary (base-2), which can lead to tiny rounding anomalies (e.g., `0.1 + 0.2` might equal `0.30000000000000004`).
-- **The `round()` Function:**
-  - `round(number[, ndigits])`: Rounds a number to a specified number of decimal digits.
-  - If `ndigits` is omitted, rounds to the nearest whole integer:
+
+- **Definition:** Represents real numbers containing a **decimal point** (e.g., `3.14`, `-0.01`, `0.0`, `100.5`).
+  - Called "floating-point" because the decimal point can "float" depending on how many significant digits exist before and after it.
+
+- **Casting Input with `float()`:**
+  - Unlike `int()`, which crashes on decimals, `float()` parses numbers with fractional values:
     ```python
-    z = round(3.14159, 2)  # Output: 3.14
+    x = float(input("What's x? "))  # User enters: 1.5
+    y = float(input("What's y? "))  # User enters: 2.5
+    print(x + y)                    # Output: 4.0
     ```
 
+- **Division Always Yields a `float`:**
+  - In Python 3, the single-slash division operator `/` **always returns a `float`**, even if the numbers divide evenly without a remainder:
+    ```python
+    print(10 / 2)  # Output: 5.0 (float, not int 5)
+    print(2 / 3)   # Output: 0.6666666666666666
+    ```
+
+- **Floating-Point Imprecision:**
+  - Computers store numbers in memory as binary (base-2: 0s and 1s), not base-10 decimals.
+  - Just as the fraction $1/3$ cannot be represented precisely with finite base-10 decimals ($0.3333...$), fractions like $0.1$ and $0.2$ cannot be represented precisely in binary.
+  - **The Classic Example:**
+    ```python
+    print(0.1 + 0.2)  # Output: 0.30000000000000004 (not exactly 0.3!)
+    ```
+
+- **The `round()` Function Deep Dive:**
+  - Python includes a built-in `round()` function to manage decimal precision:
+    ```python
+    round(number[, ndigits])
+    ```
+  - **Understanding Python Documentation Syntax — Square Brackets `[ ]` Mean "Optional":**
+    - In Python's official documentation, square brackets `[ ]` indicate that an argument is **optional** (you do not have to provide it).
+    - `number` has no brackets around it &rarr; **required** (you must provide at least one number).
+    - `[, ndigits]` is in brackets &rarr; **optional** (you can omit it, or provide an integer specifying decimal places).
+    - **Why is the comma inside the bracket `[, ndigits]`?**
+      - It signals: *"If you choose to supply `ndigits`, you must also include the comma separating it from `number`."*
+    - ⚠️ **Critical Rule:** Never type the square brackets in actual Python code! They are purely documentation notation.
+      ```python
+      # ❌ SYNTAX ERROR / creates a list:
+      round(3.14159, [2])
+
+      # ✅ CORRECT:
+      round(3.14159, 2)
+      ```
+    - *(You also see this pattern in string methods like `str.strip([chars])`, where `chars` is optional!)*
+
+  - **1. Rounding to the Nearest Integer (when `ndigits` is omitted):**
+    ```python
+    print(round(2.6))  # Output: 3
+    print(round(2.1))  # Output: 2
+    ```
+  - **2. Rounding to Specific Decimal Places (`ndigits`):**
+    ```python
+    z = 2 / 3
+    print(round(z, 2))  # Output: 0.67
+    ```
+  - **3. Python's Rounding Rule — Banker's Rounding (Round Half to Even):**
+    - When a number ends exactly in `.5` (equidistant from two integers), Python rounds to the **nearest EVEN number**:
+      ```python
+      print(round(2.5))  # Output: 2  (2 is even)
+      print(round(3.5))  # Output: 4  (4 is even)
+      ```
+    - *Why?* Standard "round half up" creates an upward bias in financial/scientific computations. Rounding half to even balances rounding errors symmetrically.
+
+- **`round()` vs. f-string Formatting (`:.2f`):**
+
+  | Feature | `round(z, 2)` | `f"{z:.2f}"` |
+  | :--- | :--- | :--- |
+  | **Return Type** | A numerical `float` (`12.5`) | A formatted text `str` (`"12.50"`) |
+  | **Trailing Zeros** | Drops trailing zeros (`12.50` &rarr; `12.5`) | **Enforces** exact decimal places (`"12.50"`) |
+  | **Thousands Commas**| Not supported directly | Supported via `f"{z:,.2f}"` (`"1,234.50"`) |
+  | **Best Used For** | Mathematical calculations | Displaying to users / printing currency |
+
 #### D. Type Conversion (Type Casting)
-- `int(value)`: Converts value to an integer (drops decimals if given a float).
-- `float(value)`: Converts value to a floating-point number.
-- `str(value)`: Converts any value into its text string representation.
+
+**Type Conversion** (also universally called **Type Casting**) is the process of converting a value from one data type into another (for example, taking the string `"5"` and converting it into the integer `5`).
+
+1. **Explicit Type Conversion (Type Casting):**
+   - When the programmer manually tells Python to convert a value using built-in conversion functions:
+     - **`int(x)`**: Converts `x` to an integer (e.g., `int("42")` &rarr; `42`, or `int(3.9)` &rarr; `3` [truncates decimals]).
+     - **`float(x)`**: Converts `x` to a floating-point decimal (e.g., `float("3.14")` &rarr; `3.14`, or `float(5)` &rarr; `5.0`).
+     - **`str(x)`**: Converts `x` to a string (e.g., `str(50)` &rarr; `"50"`).
+     - **`bool(x)`**: Converts `x` to boolean `True` or `False` (e.g., `bool(0)` &rarr; `False`, `bool(1)` &rarr; `True`).
+
+2. **Implicit Type Conversion (Type Coercion):**
+   - When Python automatically converts data types behind the scenes without manual intervention, usually to avoid losing precision during arithmetic:
+     - Adding an `int` and a `float`:
+       ```python
+       a = 3       # int
+       b = 2.5     # float
+       c = a + b   # Python automatically converts 'a' to 3.0 -> c is 5.5 (float)
+       ```
+     - Float division with `/`:
+       ```python
+       result = 4 / 2  # Python automatically converts result to 2.0 (float)
+       ```
 
 ---
 
@@ -298,7 +433,19 @@ The backslash tells Python to treat the following character literally or special
 
 ### 7. Format Strings (f-strings) & `{}` Placeholders
 
-Introduced in Python 3.6, **f-strings** (formatted string literals) provide the cleanest and fastest way to interpolate variables into text.
+- **What does the "f" stand for?**
+  - The `f` stands for **format** — which is why they are called **Format Strings** (or *formatted string literals* in the official Python docs).
+- **How David Malan Introduces It in CS50:**
+  - In `hello.py`, you start by combining strings with `print()` in two basic ways:
+    1. Using concatenation (`+`): `print("hello, " + name)` *(requires manual spacing and only works with strings)*
+    2. Using comma arguments: `print("hello,", name)` *(uses `print()`'s default separator)*
+  - Then, David introduces **f-strings** as Python's modern, elegant solution:
+    ```python
+    name = input("What's your name? ")
+    print(f"hello, {name}")
+    ```
+- **Why are they called format strings?**
+  - They allow you to **format** variables directly inside the string using curly braces `{}` rather than breaking the string apart with commas or `+` signs.
 
 #### A. Basic Syntax
 Prefix the opening quote with an `f` or `F`. Any variable or expression inside `{}` is evaluated and inserted directly:
@@ -313,9 +460,49 @@ print(f"hello, {name}")   # Output: hello, David
 - **Method & Function Calls:** `f"Clean: {name.strip().title()}"`
 
 #### C. Formatting Modifiers (The Colon `:` Syntax)
-- **Thousands Separator (`:,`):** `f"{1000000:,}"` &rarr; `1,000,000`
-- **Decimal Precision (`:.Nf`):** `f"{3.14159:.2f}"` &rarr; `3.14`
-- **Combined (`:,.2f`):** `f"${1250000.5:,.2f}"` &rarr; `$1,250,000.50`
+After your variable inside `{}` , adding a colon `:` signals that you want to apply **formatting specifications**:
+
+- **Thousands Separator (`:,`):**
+  - **In CS50 (`calculator.py`):** When adding large numbers (like `x = 1000` and `y = 0` or large sums), David Malan demonstrates how to add commas automatically:
+    ```python
+    z = 1000
+    print(f"{z:,}")  # Output: 1,000
+    ```
+  - Works on both integers and floats:
+    ```python
+    z = 1000000
+    print(f"{z:,}")  # Output: 1,000,000
+    ```
+  - **Underscore Separator (`:_`):**
+    - You can also use an underscore for readability: `print(f"{1000000:_}")` &rarr; `1_000_000`.
+  - **Country / Regional Formatting (Locales):**
+    - The standard `:,` always uses the Anglo-American comma standard (groups of 3).
+    - If you need European formatting (where `.` is used for thousands and `,` for decimals) or Indian numbering systems (lakhs/crores), Python provides the `locale` module (`f"{z:n}"` with locale set). In CS50, `f"{z:,}"` is the standard tool taught.
+
+- **Decimal Precision (`:.Nf`):**
+  - Rounds to $N$ decimal places and formats as a float:
+    ```python
+    z = 2 / 3           # 0.6666666666666666...
+    print(f"{z:.2f}")   # Output: 0.67 (automatically rounded!)
+    ```
+  - **Breaking Down the Syntax `:.2f`:**
+    | Character | Meaning |
+    | :--- | :--- |
+    | **`:`** | Starts the formatting instructions |
+    | **`.`** | Targets the decimal digits |
+    | **`2`** | Enforces exactly **2** decimal places |
+    | **`f`** | Formats as a **f**loating-point number |
+  - **The Superpower: Preserves Trailing Zeros (Unlike `round()`):**
+    - `round(50.5, 2)` drops trailing zeros &rarr; prints `50.5`
+    - `f"{50.5:.2f}"` **forces** 2 digits &rarr; prints `50.50` (essential for displaying currency like dollars/cents!)
+
+- **Combined Commas & Decimals (`:,.2f`):**
+  - Combines both thousands commas and 2 fixed decimal places:
+    ```python
+    z = 1250000.5
+    print(f"${z:,.2f}")  # Output: $1,250,000.50
+    ```
+
 - **Literal Braces `{{` and `}}`:** `f"Set: {{{name}}}"` &rarr; `Set: {David}`
 
 ---
@@ -435,12 +622,28 @@ if num % 2 == 0:
 else:
     print(f"{num} is Odd (num % 2 != 0)")
 
-price = float(input("Enter price: "))
-tax = float(input("Enter tax (e.g. 0.05): "))
-total = round(price * (1 + tax), 2)
-print(f"Total: ${total:,.2f}")
+# 6. Data Types: float, round(), and Formatting
+x = float(input("Enter decimal x: "))          # e.g., 2.5
+y = float(input("Enter decimal y: "))          # e.g., 1.2
+print(f"Float Sum ({x} + {y}): {x + y}")
 
-# 6. Functions with 'return' (Reusable & Composable)
+# Division produces float
+z = 2 / 3
+print(f"Raw division (2 / 3): {z}")            # 0.6666666666666666
+print(f"round(z, 2):          {round(z, 2)}")  # 0.67
+print(f"Formatted ':.2f':     {z:.2f}")        # '0.67'
+
+# Banker's Rounding (Round half to even)
+print(f"round(2.5): {round(2.5)}")             # 2 (nearest even number)
+print(f"round(3.5): {round(3.5)}")             # 4 (nearest even number)
+
+# Currency formatting with commas and fixed decimals
+price = 1250000.5
+tax = 0.05
+total = price * (1 + tax)
+print(f"Total Price: ${total:,.2f}")           # Output: $1,312,500.50
+
+# 7. Functions with 'return' (Reusable & Composable)
 def square(n):
     """Calculates and returns the square of n."""
     return n * n
