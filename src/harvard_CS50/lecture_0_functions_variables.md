@@ -507,23 +507,307 @@ After your variable inside `{}` , adding a colon `:` signals that you want to ap
 
 ---
 
-### 8. Side Effects vs. Return Values
-- **Side Effect:** Any action a function performs outside its own internal scope besides returning data.
-  - *Example:* Printing text to the screen using `print()` is a **side effect**.
-  - *Important:* `print()` displays text on the console, but its return value is `None`. You cannot store its output for math calculations.
-- **Return Value:** The actual data a function passes back to the program using `return`.
-  - *Example:* `input()` returns a string you can save in a variable and manipulate.
+### 8. Creating Your Own Functions with `def`
+
+Until now, we have used Python's built-in functions (`print()`, `input()`, `int()`, `float()`, `round()`). In CS50, David Malan introduces how to **invent your own functions** using the `def` keyword (short for *define*).
+
+#### A. Why Create Your Own Functions?
+1. **Eliminate Redundant Code (DRY — Don't Repeat Yourself):** Instead of copying and pasting the same logic, define it once and call it anywhere.
+2. **Readability & Abstraction:** Naming a set of steps (like `def greet()` or `def calculate_tax()`) makes code self-documenting.
+3. **Modularity & Testing:** Smaller units of code are easier to test and debug independently.
+
+#### B. Basic Function Syntax: `def hello():`
+```python
+def hello():
+    print("hello")
+
+# Calling the function:
+hello()  # Output: hello
+```
+- **Key Parts:**
+  - `def`: The reserved keyword telling Python you are defining a new function.
+  - `hello`: The function's name (following `snake_case` naming rules).
+  - `()`: Parentheses to hold optional parameters.
+  - `:`: The colon ending the header line.
+  - **Indentation (4 spaces):** Everything indented beneath `def` belongs to the function's body.
+
+#### C. Parameterized Functions (Passing Data into Functions)
+
+A **parameterized function** is a function that defines one or more parameters in its header, allowing it to accept dynamic data whenever it is called.
+
+##### 1. Parameter vs. Argument (The Crucial Difference)
+- **Parameter:** The variable listed inside the parentheses in the function's definition (`def`). It acts as a placeholder.
+- **Argument:** The actual concrete value or variable you pass to the function when you invoke/call it.
+
+```text
+def greet(name):   <--- 'name' is the PARAMETER (placeholder)
+    ...
+
+greet("David")     <--- '"David"' is the ARGUMENT (concrete value)
+```
+
+##### 2. Single Parameter Function
+In CS50, David Malan transitions `hello()` from a rigid function that only prints `"hello"` to a parameterized function that greets anyone:
+
+```python
+def hello(to):
+    print(f"hello, {to}")
+
+name = input("What's your name? ")
+hello(name)      # e.g., Output: hello, David
+hello("Carter")  # e.g., Output: hello, Carter
+```
+
+##### 3. Multiple Parameters
+A function can take 2, 3, or as many parameters as needed, separated by commas:
+```python
+def print_full_greeting(greeting, name):
+    print(f"{greeting}, {name}!")
+
+print_full_greeting("Good morning", "Alice")  # Good morning, Alice!
+print_full_greeting("Welcome", "Bob")         # Welcome, Bob!
+```
+
+##### 4. Positional vs. Keyword Arguments
+When passing arguments to a parameterized function:
+- **Positional Arguments (Order Matters):** Matched to parameters by position from left to right.
+  ```python
+  def describe_pet(animal_type, pet_name):
+      print(f"I have a {animal_type} named {pet_name}.")
+
+  describe_pet("dog", "Rusty")  # I have a dog named Rusty.
+  # ⚠️ Flipping order changes meaning:
+  describe_pet("Rusty", "dog")  # I have a Rusty named dog.
+  ```
+- **Keyword Arguments (Order Doesn't Matter):** Explicitly specify the parameter name:
+  ```python
+  describe_pet(pet_name="Rusty", animal_type="dog")  # I have a dog named Rusty.
+  ```
+
+##### 5. Default Parameter Values (`def hello(to="world"):`)
+
+In Python, you can assign a **default value** to a parameter in the function header using `=`. This makes that argument **optional** when calling the function.
+
+- **How it works:**
+  - If the caller **passes an argument**, Python **overrides** the default with the caller's value.
+  - If the caller **omits the argument**, Python automatically **falls back** to the default value.
+
+```python
+def hello(to="world"):
+    print(f"hello, {to}")
+
+# Case 1: Caller provides NO argument -> uses the default "world"
+hello()         # Output: hello, world
+
+# Case 2: Caller provides an argument -> overrides "world" with "David"
+hello("David")  # Output: hello, David
+```
+
+- **Connection to Built-in Functions in Python:**
+  - You have actually been using default values from day one without realizing it!
+  - `print(*objects, sep=' ', end='\n')` has default values `sep=' '` and `end='\n'`.
+  - When you run `print("hello")`, you don't have to specify `end='\n'` because Python defaults to it.
+  - With `def hello(to="world"):`, you are doing the **exact same thing** for your own custom functions!
+
+- **The Golden Syntax Rule: Default Parameters Must Come LAST:**
+  - Python requires all **non-default parameters** to appear *before* any **default parameters**:
+  ```python
+  # ✅ VALID: non-default first, default last
+  def greet(greeting, to="world"):
+      print(f"{greeting}, {to}")
+
+  # ❌ SYNTAX ERROR: non-default cannot follow default!
+  # SyntaxError: non-default argument follows default argument
+  def greet(to="world", greeting):
+      print(f"{greeting}, {to}")
+  ```
+  *(Why? If you called `greet("hello")`, Python wouldn't know whether `"hello"` was meant for `to` or for `greeting`!)*
+
+#### E. The "Order of Execution" Problem & `NameError`
+
+Python is an **interpreted language** that reads and executes code **sequentially from top to bottom**. 
+
+If you attempt to call a function before Python has seen its definition:
+```python
+# ❌ THIS CRASHES!
+hello()  # NameError: name 'hello' is not defined
+
+def hello():
+    print("hello")
+```
+- **Why?** When Python is on line 1, it has not yet read line 3. It has no idea what `hello` refers to, so it throws a `NameError`.
+- **The naive fix:** You could define every helper function at the top and write the main code at the bottom. But in large programs with dozens of functions, your file becomes disorganized and upside down: the main storyline of the program gets buried at the very bottom.
 
 ---
 
-### 9. The `return` Keyword
-- **Definition:** Hands a calculated result back to the caller and **immediately terminates** the function.
-- **Why use `return` instead of `print()`?**
-  - **Composability:** You can pass the returned value into another function (`print(square(4))`), store it in a variable, or use it in math equations (`square(3) + square(4)`).
-  - **Reusability & Testing:** Returning values allows automated unit tests to verify correctness without needing console output.
-- **Unreachable Code:** Any code written directly after `return` within the same block will never run.
-- **Implicit Return:** If a function finishes without an explicit `return`, it returns `None` by default.
-- **Multiple Returns:** You can return multiple values separated by commas: `return width, height` (returned as a tuple).
+#### F. The Pythonic Solution: `def main():`
+
+To solve this cleanly, Python programmers follow a standard architectural pattern taught in CS50: **wrap the primary logic of the program inside a function called `main()`**, and invoke `main()` at the very bottom of the file.
+
+```python
+def main():
+    name = input("What's your name? ")
+    hello(name)
+    hello()
+
+def hello(to="world"):
+    print(f"hello, {to}")
+
+# The single trigger call at the very end:
+main()
+```
+
+##### 1. Step-by-Step Execution Flow (How Python Parses This Without Crashing)
+Why doesn't this crash, even though `hello()` is called inside `main()` before `hello()` is defined below it?
+
+```text
+Step 1: Python reads "def main():"
+        └── Action: Compiles and memorizes 'main' in memory. DOES NOT RUN IT.
+
+Step 2: Python reads "def hello(to='world'):"
+        └── Action: Compiles and memorizes 'hello' in memory. DOES NOT RUN IT.
+
+Step 3: Python reaches the unindented line at the bottom: "main()"
+        └── Action: NOW it actually executes main()!
+
+Step 4: Inside main(), it calls "hello(name)".
+        └── Since 'hello' was already loaded into memory during Step 2,
+            Python executes it seamlessly!
+```
+
+##### 2. Key Benefits of Using `def main():`
+1. **Readable Top-Down Storytelling:** Anyone opening your file sees `def main():` right at the top and immediately understands what the program does, without getting bogged down in utility functions below.
+2. **Eliminates Top-to-Bottom Definition Errors:** Helper functions can be placed anywhere in the file (below `main()`).
+3. **Encapsulates Variables (Avoids Global Pollution):** Variables created inside `main()` are safely contained in `main()`'s local scope instead of leaking into the global namespace.
+4. **Prepares for Module Imports (`if __name__ == "__main__":`):** Later in Python, defining `main()` allows your file to be imported as a library by other files without automatically running all your code.
+
+#### G. The Scope Issue: Variables inside `main()` Cannot Be Seen by Other Functions
+
+One of the most frequent stumbling blocks for new programmers is **Variable Scope**.
+
+##### 1. What is Scope?
+**Scope** refers to the context or region of your code where a variable is recognized, exists, and can be accessed.
+- Variables created **inside** a function belong to that function's **Local Scope**.
+- Once that function finishes executing, all of its local variables are destroyed and erased from memory.
+
+##### 2. The Classic Scope Bug (David Malan's Example)
+Suppose you ask for the user's name inside `main()`, and you try to use that variable inside `hello()`:
+
+```python
+# ❌ THIS CRASHES WITH A NameError!
+def main():
+    name = input("What's your name? ")
+    hello()
+
+def hello():
+    print(f"hello, {name}")  # 💥 Crash here!
+
+main()
+```
+
+- **The Error Message:**
+  ```text
+  NameError: name 'name' is not defined
+  ```
+- **Why did this happen?**
+  - Even though `main()` ran and stored the user's input into `name`, that variable was born inside `main()`.
+  - The function `hello()` has **no access** to variables living inside `main()`. They live in separate "rooms" separated by impenetrable walls.
+
+##### 3. The Mental Model: "Rooms with Solid Walls"
+```text
+┌─────────────────────────────────────────┐
+│ def main():                             │
+│     name = "David"  <-- [Locked inside] │
+│     hello()                             │
+└─────────────────────────────────────────┘
+                   │
+                   ▼  (Python jumps to hello)
+┌─────────────────────────────────────────┐
+│ def hello():                            │
+│     print(f"hello, {name}")             │
+│                     ▲                   │
+│         Cannot see through the wall!    │
+│         Throws: NameError               │
+└─────────────────────────────────────────┘
+```
+
+##### 4. How to Fix the Scope Issue (The Right Way)
+The correct, professional programming pattern is to **pass the data across the boundary** using arguments and parameters:
+
+```python
+# ✅ THE PROPER FIX: Pass 'name' as an argument into parameter 'to'
+def main():
+    name = input("What's your name? ")
+    hello(name)  # Hands the value of 'name' across the boundary
+
+def hello(to="world"):
+    print(f"hello, {to}")  # 'to' receives "David" locally
+
+main()
+```
+
+##### 5. Why Not Just Make Variables "Global"?
+- A **Global Variable** is declared outside of all functions, visible to the entire file.
+- **Why David Malan and CS50 advise against globals for beginners:**
+  - Global variables can be modified by any function at any time, leading to unpredictable, hard-to-debug "spaghetti code."
+  - Using parameters and return values makes functions self-contained, predictable, and reusable anywhere.
+
+---
+
+### 9. Side Effects vs. Return Values
+
+Functions can do work in two fundamentally different ways:
+
+1. **Side Effect:** Any action a function performs outside its own internal scope besides returning data.
+   - *Example:* Printing text to the terminal using `print()` is a **side effect**.
+   - *Gotcha:* `print()` displays text on the screen, but its return value is `None`. You cannot save its output to do math:
+     ```python
+     x = print("hello")
+     print(x)  # Output: None
+     ```
+
+2. **Return Value:** The actual data a function passes back to the program using the `return` keyword.
+   - *Example:* `input()` returns a string you can assign to a variable (`name = input()`).
+   - *Example:* `round()` returns a rounded number you can use in math equations.
+
+---
+
+### 10. The `return` Keyword & Reusable Functions
+
+David Malan illustrates `return` using a `calculator.py` example by creating a custom `square()` function:
+
+#### A. Implementation:
+```python
+def main():
+    x = int(input("What's x? "))
+    print("x squared is", square(x))
+
+def square(n):
+    return n * n
+
+main()
+```
+
+#### B. Different Ways to Return Powers in Python:
+```python
+def square(n):
+    return n * n      # Standard multiplication
+    # OR:
+    return n ** 2     # Exponentiation operator (power of 2)
+    # OR:
+    return pow(n, 2)  # Built-in pow(base, exp) function
+```
+
+#### C. Why `return` is Better Than `print()` Inside Functions:
+1. **Composability:** You can nest the returned value inside math formulas:
+   ```python
+   # Pythogoras: a^2 + b^2 = c^2
+   c_squared = square(3) + square(4)  # 9 + 16 = 25
+   ```
+2. **Reusability & Automated Testing:**
+   - In later lectures (Lecture 5 on Unit Tests with `pytest`), you will test your code automatically.
+   - Tests cannot easily check what is printed on the screen, but they can easily verify return values: `assert square(2) == 4`.
+3. **Immediate Exit:** The `return` statement immediately ends the function. Any code placed directly after it in that function block is unreachable (dead code).
 
 ---
 
@@ -643,7 +927,24 @@ tax = 0.05
 total = price * (1 + tax)
 print(f"Total Price: ${total:,.2f}")           # Output: $1,312,500.50
 
-# 7. Functions with 'return' (Reusable & Composable)
+# 7. Defining Custom Functions with def & Default Parameters
+def hello(to="world"):
+    print(f"hello, {to}")
+
+hello()         # Output: hello, world (uses default)
+hello("David")  # Output: hello, David (overrides default)
+
+# 8. Organizing Code with main() Pattern
+def main_demo():
+    user = "Alice"
+    greet_user(user)
+
+def greet_user(person):
+    print(f"Greetings, {person}!")
+
+main_demo()
+
+# 9. Functions with 'return' (Reusable & Composable)
 def square(n):
     """Calculates and returns the square of n."""
     return n * n
