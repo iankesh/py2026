@@ -12,9 +12,9 @@ Click any lecture below to view or edit its detailed notes:
 
 | Lecture | Topic | File Link | Status |
 | :---: | :--- | :--- | :---: |
-| **0** | Functions, Variables | [lecture_0_functions_variables.md](lecture_0_functions_variables.md) | 🟡 In Progress |
-| **1** | Conditionals | [lecture_1_conditionals.md](lecture_1_conditionals.md) | ⚪ Not Started |
-| **2** | Loops | [lecture_2_loops.md](lecture_2_loops.md) | ⚪ Not Started |
+| **0** | Functions, Variables | [lecture_0_functions_variables.md](lecture_0_functions_variables.md) | 🟢 Completed |
+| **1** | Conditionals | [lecture_1_conditionals.md](lecture_1_conditionals.md) | 🟢 Completed |
+| **2** | Loops | [lecture_2_loops.md](lecture_2_loops.md) | 🟢 Completed |
 | **3** | Exceptions | [lecture_3_exceptions.md](lecture_3_exceptions.md) | ⚪ Not Started |
 | **4** | Libraries | [lecture_4_libraries.md](lecture_4_libraries.md) | ⚪ Not Started |
 | **5** | Unit Tests | [lecture_5_unit_tests.md](lecture_5_unit_tests.md) | ⚪ Not Started |
