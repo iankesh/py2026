@@ -42,9 +42,18 @@
 
 ---
 
-### 3. Data Types (`str`, `int`, `float`)
+### 3. Data Types (`str`, `int`, `float`, `bool`)
 
 In Python, every value has a **data type** that dictates what kind of data it represents and what operations can be performed on it. You can check any value's type using the `type()` function (e.g., `type("hello")` &rarr; `<class 'str'>`).
+
+#### Master Data Types Summary
+
+| Type | Full Name | Description | Example Literals | Constructor / Conversion |
+| :---: | :--- | :--- | :--- | :---: |
+| **`str`** | String | Text enclosed in quotes (immutable) | `"David"`, `'hello'` | `str(42)` &rarr; `"42"` |
+| **`int`** | Integer | Whole numbers (positive, negative, zero) | `42`, `-7`, `0` | `int("42")` &rarr; `42` |
+| **`float`** | Floating-point | Real numbers with decimal points | `3.14`, `-0.5`, `2.0` | `float("3.14")` &rarr; `3.14` |
+| **`bool`** | Boolean | Truth values (binary state) | `True`, `False` | `bool(1)` &rarr; `True` |
 
 #### A. The `str` (String) Data Type
 - **Definition:** Text represented as an ordered sequence of characters enclosed in quotes (`"..."` or `'...'`).
@@ -332,7 +341,15 @@ In Python, every value has a **data type** that dictates what kind of data it re
   | **Thousands Commas**| Not supported directly | Supported via `f"{z:,.2f}"` (`"1,234.50"`) |
   | **Best Used For** | Mathematical calculations | Displaying to users / printing currency |
 
-#### D. Type Conversion (Type Casting)
+#### D. The `bool` (Boolean) Data Type
+- **Definition:** Represents binary truth values (`True` or `False`). Named after 19th-century mathematician George Boole.
+- **Strict Syntax:** Must be capitalized (`True`, `False`). Lowercase `true` causes a `NameError`.
+- **Returned by Comparisons:** Expressions using `>`, `<`, `==`, `!=`, `>=`, `<=` always evaluate to a `bool`.
+- **Truthy vs. Falsy Values:**
+  - **Falsy (evaluates to `False`):** `0`, `0.0`, empty string `""`, `None`, empty collections (`[]`, `{}`).
+  - **Truthy (evaluates to `True`):** Any non-zero number, any non-empty string, any populated collection.
+
+#### E. Type Conversion (Type Casting)
 
 **Type Conversion** (also universally called **Type Casting**) is the process of converting a value from one data type into another (for example, taking the string `"5"` and converting it into the integer `5`).
 
