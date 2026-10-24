@@ -772,11 +772,32 @@ Functions can do work in two fundamentally different ways:
 
 ---
 
-### 10. The `return` Keyword & Reusable Functions
+### 10. The `return` Keyword — Handing Data Back
 
-David Malan illustrates `return` using a `calculator.py` example by creating a custom `square()` function:
+The **`return`** keyword is used inside a function to send a result back to wherever the function was called, while immediately terminating the function's execution.
 
-#### A. Implementation:
+#### A. The Mental Model: "A Work Order"
+Think of calling a function with `return` like placing a work order:
+1. You hand materials (arguments) into the workshop: `square(4)`.
+2. The function does the calculation behind closed doors: `4 * 4`.
+3. The function **hands the finished product back to you**: `16`.
+4. The call expression `square(4)` literally **transforms into `16`** right where you called it!
+
+```text
+    print("x squared is", square(x))
+                            │
+              Calls square(4) with n = 4
+                            │
+              square calculates: 4 * 4 = 16
+                            │
+              Hands back: return 16
+                            ▼
+    print("x squared is",   16)
+```
+
+#### B. CS50's Canonical Example: `calculator.py`
+David Malan builds a function to calculate the square of any number:
+
 ```python
 def main():
     x = int(input("What's x? "))
@@ -788,26 +809,67 @@ def square(n):
 main()
 ```
 
-#### B. Different Ways to Return Powers in Python:
+#### C. Ways to Calculate Powers in Python:
 ```python
 def square(n):
     return n * n      # Standard multiplication
     # OR:
     return n ** 2     # Exponentiation operator (power of 2)
     # OR:
-    return pow(n, 2)  # Built-in pow(base, exp) function
+    return pow(n, 2)  # Built-in pow(base, exponent) function
 ```
 
-#### C. Why `return` is Better Than `print()` Inside Functions:
-1. **Composability:** You can nest the returned value inside math formulas:
-   ```python
-   # Pythogoras: a^2 + b^2 = c^2
-   c_squared = square(3) + square(4)  # 9 + 16 = 25
-   ```
-2. **Reusability & Automated Testing:**
-   - In later lectures (Lecture 5 on Unit Tests with `pytest`), you will test your code automatically.
-   - Tests cannot easily check what is printed on the screen, but they can easily verify return values: `assert square(2) == 4`.
-3. **Immediate Exit:** The `return` statement immediately ends the function. Any code placed directly after it in that function block is unreachable (dead code).
+#### D. The Crucial Difference: `return` vs. `print()`
+
+This is one of the most critical distinctions in all of programming:
+
+| Feature | `print()` | `return` |
+| :--- | :--- | :--- |
+| **What it does** | Displays text on the terminal screen (side effect). | Hands data back into your code's memory. |
+| **Audience** | The **human user** looking at the monitor. | The **computer program** running the next line of code. |
+| **Can you store it?** | ❌ No. `result = print(4)` stores `None`. | ✅ Yes. `result = square(4)` stores `16`. |
+| **Can you do math on it?**| ❌ No. `print(4) + print(5)` crashes (`TypeError`). | ✅ Yes. `square(3) + square(4)` gives `25`. |
+
+```python
+# ❌ INCORRECT: Using print() instead of return:
+def bad_square(n):
+    print(n * n)
+
+result = bad_square(4)   # Prints 16 to the screen...
+print(result + 1)        # 💥 TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'
+
+# ✅ CORRECT: Using return:
+def good_square(n):
+    return n * n
+
+result = good_square(4)  # Hands back 16, stored into 'result'
+print(result + 1)        # Output: 17
+```
+
+#### E. Two Superpowers of `return`
+
+##### 1. Immediate Function Termination ("Early Exit")
+As soon as Python hits a `return` statement, it exits the function **immediately**. Any lines written beneath it in the same block are **dead code** (they will never run):
+
+```python
+def test():
+    print("This runs")
+    return "Finished"
+    print("This will NEVER run!")  # Dead code!
+```
+
+##### 2. Returning Multiple Values
+You can return multiple values separated by commas. Python packages them together into a **tuple**:
+
+```python
+def get_dimensions():
+    width = 1920
+    height = 1080
+    return width, height  # Returns both values
+
+w, h = get_dimensions()   # Unpacks into two variables
+print(f"{w}x{h}")         # 1920x1080
+```
 
 ---
 
